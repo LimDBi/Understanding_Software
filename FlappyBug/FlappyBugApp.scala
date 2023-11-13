@@ -13,18 +13,32 @@ val scenery =
   sky.place(rootedTree, BottomLeft, BottomLeft)
 
 val bugPic = Pic("ladybug.png")
-
-def rockPic(obstacle: Obstacle) = circle(obstacle.radius * 2, Black)
-
+val enemyPic = Pic("obstacle.png")
 
 val game = Game()
 
 object flappyView extends View(game, "FlappyBug"):
-  def makePic =
-    val obstaclePic = rockPic(game.obstacle)
-    scenery.place(obstaclePic, game.obstacle.pos).place(bugPic, game.bug.pos)
 
+  var background = scenery
+
+  def makePic =
+    var compositePic = this.background
+    for obstacle <- game.obstacles do
+      val obstaclePic = enemyPic.scaleTo(obstacle.radius * 2)
+      compositePic = compositePic.place(obstaclePic, obstacle.pos)
+    compositePic.place(bugPic, game.bug.pos)
+
+  override def onKeyDown(key: Key) =
+    if key == Key.Space then
+      game.activateBug()
+
+  override def onTick() =
+    game.timePasses()
+    this.background = this.background.shiftLeft(BugSpeed)
+
+  override def isDone = game.isLost
+
+end flappyView
 
 @main def launchFlappy() =
   flappyView.start()
-
