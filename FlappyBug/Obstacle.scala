@@ -1,17 +1,30 @@
 package o1.flappy
 
 import o1.*
+import scala.util.Random
 
-// This class is introduced in Chapter 2.6.
+class Obstacle(val radius: Int):
 
-class Obstacle(val radius: Int, var initialPos: Pos):
+  private var currentPos = this.randomLaunchPosition()
 
-  private var currentPos = initialPos
   def pos = this.currentPos
 
-  def approach() =
-    this.currentPos = this.currentPos.addX(-ObstacleSpeed)
+  override def toString = s"center at $pos, radius $radius"
 
-  override def toString = "center at " + this.pos + ", radius " + this.radius
+  def touches(bug: Bug) = bug.pos.distance(this.pos) < bug.radius + this.radius
+
+  def isActive = this.pos.x >= -this.radius
+
+  def approach() =
+    this.currentPos =
+      if this.isActive then
+        this.currentPos.addX(-ObstacleSpeed)
+      else
+        this.randomLaunchPosition()
+
+  private def randomLaunchPosition() =
+    val launchX = ViewWidth + this.radius + Random.nextInt(500)
+    val launchY = Random.nextInt(ViewHeight)
+    Pos(launchX, launchY)
 
 end Obstacle
