@@ -11,8 +11,10 @@ class Game:
     this.bug.flap(FlapStrength)
 
   def timePasses() =
-    for obstacle <- this.obstacles do
-      obstacle.approach()
+    //for obstacle <- this.obstacles do
+      //obstacle.approach()
+    //for문 대신에 foreach함수를 사용하여 간단화하기
+      obstacle.foreach(x => x.approach())
     this.bug.fall()
 
   def isLost =
